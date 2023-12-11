@@ -15,6 +15,6 @@ begin
    if CLI.Argument (1) = "0" then
       Smoke_Test.Run;
    elsif CLI.Argument (1) = "1" then
-      Prime_Time;
+      Prime_Time.Run;
    end if;
 end Protohackers;
