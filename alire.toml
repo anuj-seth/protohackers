@@ -8,4 +8,4 @@ maintainers-logins = ["anuj-seth"]
 
 executables = ["protohackers"]
 [[depends-on]]
-gnatcoll = "^21.0.0"
+gnatcoll = "^24.0.0"

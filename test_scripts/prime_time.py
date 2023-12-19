@@ -19,7 +19,7 @@ messages = [# {'method': 'isPrime', 'number':123 },
 for message in messages:
     client_sock.sendall((json.dumps(message) + '\n').encode())
 
-client_sock.sendall(b'n\n')
+#client_sock.sendall(b'n\n')
 print("sent")
 
 chunks = []
