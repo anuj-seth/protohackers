@@ -22,8 +22,8 @@ package body Prime_Time is
    begin
       loop
          Streams.Read (Channel.all, Data, Last);
-         TIO.Put_Line (Item => Data (1)'Image);
-         exit when Character'Val (Data (1)) = Ada.Characters.Latin_1.LF;
+         exit when Character'Val (Data (1)) = Ada.Characters.Latin_1.LF
+            or Last = 0;
          SU.Append (Source => Till_Now, New_Item => Character'Val (Data (1)));
       end loop;
       return SU.To_String (Till_Now);
@@ -43,8 +43,8 @@ package body Prime_Time is
                                                    Success => Success);
             Response_Buffer : Streams.Stream_Element_Array (1 .. Response'Length + 1);
          begin
-            TIO.Put_Line (Item => Request);
-            TIO.Put_Line (Item => Response);
+            TIO.Put_Line (Item => "1 " & Request);
+            TIO.Put_Line (Item => "2 " & Response);
             for I in Response'Range loop
                Response_Buffer (Streams.Stream_Element_Offset (I)) := Character'Pos (Response (I));
             end loop;
@@ -53,6 +53,7 @@ package body Prime_Time is
             exit when not Success;
          end;
       end loop;
+      Sockets.Close_Socket (Socket);
    end Handler;
 
    procedure Run is

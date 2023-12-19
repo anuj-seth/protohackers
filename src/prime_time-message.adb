@@ -1,16 +1,17 @@
 with Ada.Text_IO;
 with GNATCOLL.JSON;   use type GNATCOLL.JSON.JSON_Value_Type;
 with Ada.Numerics.Elementary_Functions;
+with Ada.Numerics.Big_Numbers.Big_Integers;
 
 package body Prime_Time.Message is
    package TIO renames Ada.Text_IO;
    package Json renames GNATCOLL.JSON;
 
-   function Is_Prime (N : Integer)
+   function Is_Prime (N : Long_Integer)
    return Boolean is
       use Ada.Numerics.Elementary_Functions;
    begin
-      if N <= 0 then
+      if N <= 1 then
          return False;
       elsif N = 2 then
          return True;
@@ -18,7 +19,7 @@ package body Prime_Time.Message is
          return False;
       else
          for I in 3 .. Positive (Sqrt (Float (N))) loop
-            if N mod I = 0 then
+            if N mod Long_Integer (I) = 0 then
                return False;
             end if;
          end loop;
@@ -34,7 +35,7 @@ package body Prime_Time.Message is
    return Boolean is
    begin
       if Is_Fractional_Part_Zero (Number => N) then
-         return Is_Prime (N => Integer (N));
+         return Is_Prime (N => Long_Integer (N));
       else
          return False;
       end if;
@@ -69,13 +70,15 @@ package body Prime_Time.Message is
       Result : constant Json.Read_Result :=
          Json.Read (Json_String);
    begin
-      TIO.Put_Line (Item => Json_String);
+      TIO.Put_Line (Item => "3 " & Json_String);
       if Result.Success
          and then Json.Kind (Val => Result.Value) = Json.JSON_Object_Type
       then
+         TIO.Put_Line (Item => "we were able to parse");
          Parsed_Json := Result.Value;
          return True;
       else
+         TIO.Put_Line (Item => Json.Format_Parsing_Error (Error => Result.Error));
          return False;
       end if;
    end Parse;
@@ -86,7 +89,9 @@ package body Prime_Time.Message is
       Parsed_Json : Json.JSON_Value;
       Is_Prime_Number : Boolean;
       Float_Number : Float;
+      Number_Value : Json.JSON_Value;
       Integer_Number : Long_Integer;
+      --  L : Long_Long_Integer := 134775908435340144855222017661958087420726727691935288;
       Response : constant Json.JSON_Value := Json.Create_Object;
    begin
       if Parse (Json_String => Json_String,
@@ -95,16 +100,19 @@ package body Prime_Time.Message is
          and then Are_Fields_Of_Correct_Type (Json_Data => Parsed_Json)
          and then Is_Method_isPrime (Json_Data => Parsed_Json)
       then
-         if Json.Get (Val => Parsed_Json,
-                      Field => "number").Kind = Json.JSON_Float_Type
+         Number_Value := Json.Get (Val => Parsed_Json, 
+                                   Field => "number");
+         TIO.Put_Line (Json.Kind (Val => Number_Value)'Image);
+         if Number_Value.Kind = Json.JSON_Float_Type
          then
-            Float_Number := Json.Get (Val => Parsed_Json,
-                                      Field => "number");
+            TIO.Put_Line ("trying to get float");
+            Float_Number := Json.Get (Val => Number_Value); 
             Is_Prime_Number := Is_Prime (N => Float_Number);
          else
-            Integer_Number := Json.Get (Val => Parsed_Json,
-                                        Field => "number");
-            Is_Prime_Number := Is_Prime (N => Integer (Integer_Number));
+            TIO.Put_Line ("trying to extract integer");
+            TIO.Put_Line ("now converting");
+            Integer_Number := Json.Get (Val => Number_Value);
+            Is_Prime_Number := Is_Prime (N => Integer_Number);
          end if;
          Response.Set_Field ("method", "isPrime");
          Response.Set_Field ("prime", Is_Prime_Number);
@@ -115,4 +123,6 @@ package body Prime_Time.Message is
       end if;
       return Response.Write;
    end Message_Handler;
+begin
+   Ada.Text_IO.Put_Line (Ada.Numerics.Big_Numbers.Big_Integers.Big_Integer'Image(2 ** 256));
 end Prime_Time.Message;
