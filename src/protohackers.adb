@@ -3,6 +3,7 @@ with Ada.Text_IO;
 
 with Smoke_Test;
 with Prime_Time;
+with Means_To_An_End;
 
 procedure Protohackers is
    package CLI renames Ada.Command_Line;
@@ -16,5 +17,7 @@ begin
       Smoke_Test.Run;
    elsif CLI.Argument (1) = "1" then
       Prime_Time.Run;
+   elsif CLI.Argument (1) = "2" then
+      Means_To_An_End.Run;
    end if;
 end Protohackers;
