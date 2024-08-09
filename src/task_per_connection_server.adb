@@ -1,14 +1,12 @@
 with Ada.Text_IO;
 with Ada.Exceptions;
-with Ada.Task_Identification;
 with Ada.Containers.Vectors;
 with Ada.Unchecked_Deallocation;
 
-package body Tcp_Server is
+package body Task_Per_Connection_Server is
    package TIO renames Ada.Text_IO;
    package Sockets renames GNAT.Sockets;
    package Exceptions renames Ada.Exceptions;
-   package TID renames Ada.Task_Identification;
 
    task type Connection_Handler is
       entry Start (Client_Socket : Sockets.Socket_Type);
@@ -19,12 +17,11 @@ package body Tcp_Server is
       accept Start (Client_Socket : Sockets.Socket_Type) do
          Socket := Client_Socket;
       end Start;
-      TIO.Put_Line ("Task_ID: " & TID.Image (TID.Current_Task));
       Client (Socket => Socket);
       Sockets.Close_Socket (Socket);
    exception
       when Except : others =>
-         TIO.Put_Line ("Task died: " 
+         TIO.Put_Line ("Task died: "
                        & Exceptions.Exception_Name (Except)
                        & " "
                        & Exceptions.Exception_Message (Except));
@@ -35,7 +32,7 @@ package body Tcp_Server is
       new Ada.Unchecked_Deallocation (Object => Connection_Handler,
                                       Name => Connection_Handler_Ptr);
 
-   package Tasks_Vector is 
+   package Tasks_Vector is
       new Ada.Containers.Vectors (Index_Type => Natural,
                                   Element_Type => Connection_Handler_Ptr);
    Running_Tasks : Tasks_Vector.Vector;
@@ -78,7 +75,7 @@ package body Tcp_Server is
       loop
          declare
             Socket : Sockets.Socket_Type;
-            Handler_Task : Connection_Handler_Ptr :=
+            Handler_Task : constant Connection_Handler_Ptr :=
                new Connection_Handler;
          begin
             Sockets.Accept_Socket (Server, Socket, Address);
@@ -93,4 +90,4 @@ package body Tcp_Server is
                     ": " &
                     Exceptions.Exception_Message (E));
    end Run;
-end Tcp_Server;
+end Task_Per_Connection_Server;

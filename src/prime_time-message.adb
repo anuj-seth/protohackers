@@ -12,11 +12,11 @@ package body Prime_Time.Message is
    use type BINT.Big_Integer;
    package Regpat renames GNAT.Regpat;
 
-   function Get_Big_Number (S : String) 
+   function Get_Big_Number (S : String)
    return BINT.Big_Integer is
-     Re : constant Regpat.Pattern_Matcher :=
-        Regpat.Compile (".*""number""\s*:\s*(\d*),");
-     Matches : Regpat.Match_Array (0 .. 1);
+      Re : constant Regpat.Pattern_Matcher :=
+         Regpat.Compile (".*""number""\s*:\s*(\d*),");
+      Matches : Regpat.Match_Array (0 .. 1);
    begin
       Regpat.Match (Re, S, Matches);
       return BINT.From_String (Arg => S (Matches (1).First .. Matches (1).Last));

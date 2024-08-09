@@ -1,7 +1,7 @@
 with GNAT.Sockets;
 with Ada.Streams;
 
-with Tcp_Server;
+with Task_Per_Connection_Server;
 
 package body Smoke_Test is
    package Sockets renames GNAT.Sockets;
@@ -26,6 +26,6 @@ package body Smoke_Test is
 
    procedure Run is
    begin
-      Tcp_Server.Run (Callback => Echo'Access);
+      Task_Per_Connection_Server.Run (Callback => Echo'Access);
    end Run;
 end Smoke_Test;

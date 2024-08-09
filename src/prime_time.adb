@@ -4,7 +4,7 @@ with Ada.Streams;
 with Ada.Strings.Unbounded;
 with Ada.Characters.Latin_1;
 
-with Tcp_Server;
+with Task_Per_Connection_Server;
 with Prime_Time.Message;
 
 package body Prime_Time is
@@ -58,6 +58,6 @@ package body Prime_Time is
 
    procedure Run is
    begin
-      Tcp_Server.Run (Callback => Handler'Access);
+      Task_Per_Connection_Server.Run (Callback => Handler'Access);
    end Run;
 end Prime_Time;
